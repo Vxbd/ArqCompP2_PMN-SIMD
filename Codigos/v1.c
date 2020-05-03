@@ -2,96 +2,112 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+typedef struct quaternion{
+	double q[4];
+}quaternion_t;
 
 #define N 1
 
-void iniCuatR(double* cuat);
-void iniCuat(double* cuat);
+void iniCuatR(quaternion_t* cuat);
+void iniCuat(quaternion_t* cuat);
 void prod(double* a, double* b, double* c);
 void sum(double* a, double* b, double* c);
 void opera(double* c, double* dp);
+void imprimirCuat(quaternion_t cuat);
 
-struct quaternion {
-	double el1;
-	double el2;
-	double el3;
-	double el4;
-};
-typedef struct quaternion quaternion;
 
 int main(int argc, char const *argv[])
 {
-	quaternion *a, *b, *c, *dp;
+	quaternion_t a[N], b[N], c[N], dp;
 
-	a = (quaternion *)aligned_alloc(sizeof(quaternion), N * sizeof(quaternion));	//Entrada 1
-	b = (quaternion *)aligned_alloc(sizeof(quaternion), N * sizeof(quaternion));	//Entrada 2
-	c = (quaternion *)aligned_alloc(sizeof(quaternion), N * sizeof(quaternion));	//Auxiliar
-	dp = (quaternion *)aligned_alloc(sizeof(quaternion), sizeof(quaternion));
-
-	srand(321);		//Establecemos semente
+	srand(69);		//Establecemos semente
 
 	//Inicializamos as dúas entradas
+	iniCuatR(a);
+	iniCuatR(b);
+
+
+	//Imprimimos los vectores de cuaterniones
+	printf("Vector A\n");
 	for (int i = 0; i < N; ++i)
 	{
-		//iniCuatR(a[i]);
-		//iniCuatR(b[i]);
+		imprimirCuat(a[i]);
+	}
+	printf("Vector B\n");
+	for (int i = 0; i < N; ++i)
+	{
+		imprimirCuat(b[i]);
+	}
+
+
+	for (int i = 0; i < N; ++i)
+	{
+		c[i].q[0] = a[i].q[0]*b[i].q[0] - a[i].q[1]*b[i].q[1] - a[i].q[2]*b[i].q[2] - a[i].q[3]*b[i].q[3];
+		c[i].q[1] = a[i].q[0]*b[i].q[1] + a[i].q[1]*b[i].q[0] + a[i].q[2]*b[i].q[3] - a[i].q[3]*b[i].q[2];
+		c[i].q[2] = a[i].q[0]*b[i].q[2] - a[i].q[1]*b[i].q[3] + a[i].q[2]*b[i].q[1] + a[i].q[3]*b[i].q[1];
+		c[i].q[3] = a[i].q[0]*b[i].q[3] + a[i].q[1]*b[i].q[2] - a[i].q[2]*b[i].q[1] + a[i].q[3]*b[i].q[0];
+	}
+
+	iniCuat(&dp);
+
+	printf("Vector C\n");
+	for (int i = 0; i < N; ++i)
+	{
+		imprimirCuat(c[i]);
 	}
 
 	for (int i = 0; i < N; ++i)
 	{
-		c[i].el1 = a[i].el1*b[i].el1 - a[i].el2*b[i].el2 - a[i].el3*b[i].el3 - a[i].el4*b[i].el4;
-		c[i].el2 = a[i].el1*b[i].el2 + a[i].el2*b[i].el1 + a[i].el3*b[i].el4 - a[i].el4*b[i].el3;
-		c[i].el3 = a[i].el1*b[i].el3 - a[i].el2*b[i].el4 + a[i].el3*b[i].el2 + a[i].el4*b[i].el2;
-		c[i].el4 = a[i].el1*b[i].el4 + a[i].el2*b[i].el3 - a[i].el3*b[i].el2 + a[i].el4*b[i].el1;
+		dp.q[0] += c[i].q[0]*c[i].q[0] - c[i].q[1]*c[i].q[1] - c[i].q[2]*c[i].q[2] - c[i].q[3]*c[i].q[3];
+		dp.q[1] += c[i].q[0]*c[i].q[1] + c[i].q[1]*b[i].q[0] + c[i].q[2]*c[i].q[3] - c[i].q[3]*c[i].q[2];
+		dp.q[2] += c[i].q[0]*c[i].q[2] - c[i].q[1]*b[i].q[3] + c[i].q[2]*c[i].q[1] + c[i].q[3]*c[i].q[1];
+		dp.q[3] += c[i].q[0]*c[i].q[3] + c[i].q[1]*b[i].q[2] - c[i].q[2]*c[i].q[1] + (c[i].q[3])*(c[i].q[0]);
 	}
 
-	//iniCuat(dp);
-
-	for (int i = 0; i < N; ++i)
-	{
-		dp[i].el1 += c[i].el1*c[i].el1 - c[i].el2*c[i].el2 - c[i].el3*c[i].el3 - c[i].el4*c[i].el4;
-		dp[i].el2 += c[i].el1*c[i].el2 + c[i].el2*b[i].el1 + c[i].el3*c[i].el4 - c[i].el4*c[i].el3;
-		dp[i].el3 += c[i].el1*c[i].el3 - c[i].el2*b[i].el4 + c[i].el3*c[i].el2 + c[i].el4*c[i].el2;
-		dp[i].el4 += c[i].el1*c[i].el4 + c[i].el2*b[i].el3 - c[i].el3*c[i].el2 + c[i].el4*c[i].el1;
-	}
-
+	printf("Cuaterninon\n");
+	imprimirCuat(dp);
 
 	return 0;
 }
 
-void iniCuatR(double* cuat)
+
+void iniCuatR(quaternion_t* cuat)
 {
 	for (int j = 0; j < N; ++j)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
-			cuat[i] = rand()/rand();
+			printf("i-> %d\nj-> %d\n", i,j);
+			cuat[j].q[i] = rand()/rand();
 		}
 	}
-	
 }
 
-void iniCuat(double* cuat)
+void iniCuat(quaternion_t* cuat)
 {
-	for (int j = 0; j < N; ++j)
+	for (int i = 0; i < 4; ++i)
 	{
-		for (int i = 0; i < 4; ++i)
-		{
-			cuat[i] = 0;
-		}
+		cuat->q[i] = 0;
 	}
-	
 }
 
-void prod(double* a, double* b, double* c)
+void imprimirCuat(quaternion_t cuat)
+{
+	printf(" Cuat: (%lf, %lf, %lf, %lf)\n", cuat.q[0], cuat.q[1], cuat.q[2], cuat.q[3]);
+}
+
+
+/*void prod(double* a, double* b, double* c)
 {
 
 	for (int i = 0; i < N; ++i)
 	{
-		c[i].el1 = a[i].el1*b[i].el1 - a[i].el2*b[i].el2 - a[i].el3*b[i].el3 - a[i].el4*b[i].el4;
-		c[i].el2 = a[i].el1*b[i].el2 + a[i].el2*b[i].el1 + a[i].el3*b[i].el4 - a[i].el4*b[i].el3;
-		c[i].el3 = a[i].el1*b[i].el3 - a[i].el2*b[i].el4 + a[i].el3*b[i].el2 + a[i].el4*b[i].el2;
-		c[i].el4 = a[i].el1*b[i].el4 + a[i].el2*b[i].el3 - a[i].el3*b[i].el2 + a[i].el4*b[i].el1;
+		c[i].q[0] = a[i].q[0]*b[i].q[0] - a[i].q[1]*b[i].q[1] - a[i].q[2]*b[i].q[2] - a[i].q[3]*b[i].q[3];
+		c[i].q[1] = a[i].q[0]*b[i].q[1] + a[i].q[1]*b[i].q[0] + a[i].q[2]*b[i].q[3] - a[i].q[3]*b[i].q[2];
+		c[i].q[2] = a[i].q[0]*b[i].q[2] - a[i].q[1]*b[i].q[3] + a[i].q[2]*b[i].q[1] + a[i].q[3]*b[i].q[1];
+		c[i].q[3] = a[i].q[0]*b[i].q[3] + a[i].q[1]*b[i].q[2] - a[i].q[2]*b[i].q[1] + a[i].q[3]*b[i].q[0];
 	}
 	
 }
@@ -101,10 +117,10 @@ void opera(double* c, double* dp)
 
 	for (int i = 0; i < N; ++i)
 	{
-		dp[i].el1 += c[i].el1*c[i].el1 - c[i].el2*c[i].el2 - c[i].el3*c[i].el3 - c[i].el4*c[i].el4;
-		dp[i].el2 += c[i].el1*c[i].el2 + c[i].el2*b[i].el1 + c[i].el3*c[i].el4 - c[i].el4*c[i].el3;
-		dp[i].el3 += c[i].el1*c[i].el3 - c[i].el2*b[i].el4 + c[i].el3*c[i].el2 + c[i].el4*c[i].el2;
-		dp[i].el4 += c[i].el1*c[i].el4 + c[i].el2*b[i].el3 - c[i].el3*c[i].el2 + c[i].el4*c[i].el1;
+		dp.q[0] += c[i].q[0]*c[i].q[0] - c[i].q[1]*c[i].q[1] - c[i].q[2]*c[i].q[2] - c[i].q[3]*c[i].q[3];
+		dp.q[1] += c[i].q[0]*c[i].q[1] + c[i].q[1]*b[i].q[0] + c[i].q[2]*c[i].q[3] - c[i].q[3]*c[i].q[2];
+		dp.q[2] += c[i].q[0]*c[i].q[2] - c[i].q[1]*b[i].q[3] + c[i].q[2]*c[i].q[1] + c[i].q[3]*c[i].q[1];
+		dp.q[3] += c[i].q[0]*c[i].q[3] + c[i].q[1]*b[i].q[2] - c[i].q[2]*c[i].q[1] + c[i].q[3]*c[i].q[0];
 	}
 	
-}
+}*/
