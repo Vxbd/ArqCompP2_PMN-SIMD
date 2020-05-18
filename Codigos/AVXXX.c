@@ -1,7 +1,9 @@
 /*
 Autores: Barreiro Dominguez, Víctor Xesús e Castro Castreje, Helena
-Titulo:
+Titulo:-
 
+
+-mavx
 */
 
 #include <math.h>
@@ -9,12 +11,14 @@ Titulo:
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <immintrin.h>
 
 typedef struct quaternion {
   double q[4];
 } quaternion_t;
 
-#define N 5
+#define N 1
+#define CLS 64 
 
 void iniCuatR(quaternion_t *cuat);
 void iniCuat(quaternion_t *cuat);
@@ -25,6 +29,7 @@ void imprimirCuat(quaternion_t cuat);
 void start_counter();
 double get_counter();
 double mhz();
+__m256d __mm_cross4_pd(__m256d xyzw, __m256d abcd);
 
 /* Initialize the cycle counter */
 static unsigned cyc_hi = 0;
@@ -75,85 +80,58 @@ double mhz(int verbose, int sleeptime) {
 
 int main(int argc, char const *argv[]) {
   double ck = 0;
-  quaternion_t a[N], b[N], c[N], dp;
+  //quaternion_t a[N], b[N], c[N], dp;
 
-  srand(69); // Establecemos semente
+  __m256d* a = _mm_malloc(sizeof(__m256d)*N, CLS);
+  __m256d* b = _mm_malloc(sizeof(__m256d)*N, CLS);
+  __m256d* c = _mm_malloc(sizeof(__m256d)*N, CLS);  
 
-  // Inicializamos as dúas entradas
-  //iniCuatR(a);
-  //iniCuatR(b);
+  srand(69);
 
-  
-  a[0].q[0] = 1;
-  a[0].q[1] = 2;
-  a[0].q[2] = 3;
-  a[0].q[3] = 4;
+  //(rand() % 1000000) * 0.00001,
 
-  b[0].q[0] = 4;
-  b[0].q[1] = 3;
-  b[0].q[2] = 2;
-  b[0].q[3] = 1;
-
-
-  // Imprimimos los vectores de cuaterniones
-  printf("Vector A\n");
-  for (int i = 0; i < N; ++i) {
-    imprimirCuat(a[i]);
+  for (int i = 0; i < N; ++i)
+  {
+    b[i] = _mm256_set_pd(4,3,2,1);
   }
-  printf("Vector B\n");
-  for (int i = 0; i < N; ++i) {
-    imprimirCuat(b[i]);
-  }
-  start_counter();
-  /*---------Inicio codigo a medir---------*/
-  for (int i = 0; i < N; ++i) {
-    c[i].q[0] = a[i].q[0] * b[i].q[0] - a[i].q[1] * b[i].q[1] -
-                a[i].q[2] * b[i].q[2] - a[i].q[3] * b[i].q[3];
-    c[i].q[1] = a[i].q[0] * b[i].q[1] + a[i].q[1] * b[i].q[0] +
-                a[i].q[2] * b[i].q[3] - a[i].q[3] * b[i].q[2];
-    c[i].q[2] = a[i].q[0] * b[i].q[2] - a[i].q[1] * b[i].q[3] +
-                a[i].q[2] * b[i].q[0] + a[i].q[3] * b[i].q[1];
-    c[i].q[3] = a[i].q[0] * b[i].q[3] + a[i].q[1] * b[i].q[2] -
-                a[i].q[2] * b[i].q[1] + a[i].q[3] * b[i].q[0];
+  for (int i = 0; i < N; ++i)
+  {
+    a[i] = _mm256_set_pd(1,2,3,4);
   }
 
-  iniCuat(&dp);
-
-  printf("Vector C\n");
-  for (int i = 0; i < N; ++i) {
-    imprimirCuat(c[i]);
+  for (int i = 0; i < N; ++i)
+  {
+    c[i]= __mm_cross4_pd(a[i], b[i]);
   }
 
-  for (int i = 0; i < N; ++i) {
-    printf("Itersions :%d\n", i);
-    dp.q[0] += c[i].q[0] * c[i].q[0] - c[i].q[1] * c[i].q[1] -
-               c[i].q[2] * c[i].q[2] - c[i].q[3] * c[i].q[3];
-    dp.q[1] += c[i].q[0] * c[i].q[1] + c[i].q[1] * c[i].q[0] +
-               c[i].q[2] * c[i].q[3] - c[i].q[3] * c[i].q[2];
-    dp.q[2] += c[i].q[0] * c[i].q[2] - c[i].q[1] * c[i].q[3] +
-               c[i].q[2] * c[i].q[0] + c[i].q[3] * c[i].q[1];
-    dp.q[3] += c[i].q[0] * c[i].q[3] + c[i].q[1] * c[i].q[2] -
-               c[i].q[2] * c[i].q[1] + c[i].q[3] * c[i].q[0];
+  printf("A\n");
+  for (int i = 0; i < N; ++i)
+  {
+    double* d= (double*) &a[i];
+    printf("DATO: %lf %lf %lf %lf\n", d[0], d[1], d[2], d[3]);
   }
 
-  ck = get_counter();
-  /*-----------Fin codigo a medir-----------*/
+  printf("B\n");
+  for (int i = 0; i < N; ++i)
+  {
+    double* d= (double*) &b[i];
+    printf("DATO: %lf %lf %lf %lf\n", d[0], d[1], d[2], d[3]);
+  }
 
-  printf("\n Clocks=%1.10lf\n", ck);
+  printf("C\n");
+  for (int i = 0; i < N; ++i)
+  {
+    double* d= (double*) &c[i];
+    printf("DATO: %lf %lf %lf %lf\n", d[0], d[1], d[2], d[3]);
+  }
 
-  /* Esta rutina imprime a frecuencia de reloxo estimada coas rutinas
-   * start_counter/get_counter */
-  mhz(1, 1);
-
-  printf("Cuaterninon\n");
-  imprimirCuat(dp);
 
   return 0;
 }
 
 void iniCuatR(quaternion_t *cuat) {
   for (int j = 0; j < N; ++j) {
-    for (int i = 0; i < 4 ; ++i) {
+    for (int i = 0; i < 4; ++i) {
       cuat[j].q[i] = (rand() % 1000000) * 0.00001;
     }
   }
@@ -197,3 +175,20 @@ c[i].q[2]*c[i].q[1] + c[i].q[3]*c[i].q[0];
         }
 }
 */
+
+__m256d __mm_cross4_pd(__m256d xyzw, __m256d abcd){
+
+  __m256d wzyx = _mm256_shuffle_pd(xyzw,xyzw,_MM_SHUFFLE(0,1,2,3));
+  __m256d baba =_mm256_shuffle_pd(abcd,abcd,_MM_SHUFFLE(0,1,0,1));
+  __m256d dcdc =_mm256_shuffle_pd(abcd,abcd,_MM_SHUFFLE(2,3,2,3));
+
+  __m256d ZnXWY = _mm256_hsub_pd(_mm256_mul_pd(xyzw, baba), _mm256_mul_pd(wzyx, dcdc));
+
+  __m256d XZYnW = _mm256_hadd_pd(_mm256_mul_pd(xyzw, dcdc), _mm256_mul_pd(wzyx, baba));
+
+  __m256d XZWY = _mm256_addsub_pd(_mm256_shuffle_pd(XZYnW, ZnXWY, _MM_SHUFFLE(3,2,1,0)),
+    _mm256_shuffle_pd(ZnXWY, XZYnW, _MM_SHUFFLE(2,3,0,1)));
+
+  return _mm256_shuffle_pd(XZWY, XZWY, _MM_SHUFFLE(2,1,3,0));
+
+}
