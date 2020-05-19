@@ -136,6 +136,9 @@ int main(int argc, char const *argv[]) {
                c[i].q[2] * c[i].q[1] + c[i].q[3] * c[i].q[0];
   }
 
+  
+
+
   ck = get_counter();
   /*-----------Fin codigo a medir-----------*/
 
