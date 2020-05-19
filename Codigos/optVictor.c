@@ -9,12 +9,14 @@ Titulo:
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <mm_malloc.h>
 
 typedef struct quaternion {
   double q[4];
 } quaternion_t;
 
-#define N 5
+#define N 10000000
+#define CLS 64
 
 void iniCuatR(quaternion_t *cuat);
 void iniCuat(quaternion_t *cuat);
@@ -75,16 +77,21 @@ double mhz(int verbose, int sleeptime) {
 
 int main(int argc, char const *argv[]) {
   double ck = 0;
-  quaternion_t a[N], b[N], c[N], dp;
+  quaternion_t *a, *b, *c;
+  quaternion_t dp;
+
+  a = _mm_malloc(sizeof(quaternion_t)*N, CLS);
+  b = _mm_malloc(sizeof(quaternion_t)*N, CLS);
+  c = _mm_malloc(sizeof(quaternion_t)*N, CLS);  
 
   int i; //Variable de bucles
   srand(69); // Establecemos semente
 
   // Inicializamos as dúas entradas
-  //iniCuatR(a);
-  //iniCuatR(b);
+  iniCuatR(a);
+  iniCuatR(b);
 
-  
+  /*
   a[0].q[0] = 1;
   a[0].q[1] = 2;
   a[0].q[2] = 3;
@@ -94,17 +101,21 @@ int main(int argc, char const *argv[]) {
   b[0].q[1] = 3;
   b[0].q[2] = 2;
   b[0].q[3] = 1;
+  */
 
 
   // Imprimimos los vectores de cuaterniones
   printf("Vector A\n");
   for (int i = 0; i < N; ++i) {
-    imprimirCuat(a[i]);
+    //imprimirCuat(a[i]);
   }
   printf("Vector B\n");
   for (int i = 0; i < N; ++i) {
-    imprimirCuat(b[i]);
+    //imprimirCuat(b[i]);
   }
+
+  iniCuat(&dp);
+
   start_counter();
   /*---------Inicio codigo a medir---------*/
   for (i = 0; i < N; ++i) {
@@ -126,7 +137,7 @@ int main(int argc, char const *argv[]) {
     dp.q[3] += c[i].q[0] * c[i].q[3] + c[i].q[1] * c[i].q[2] -
                c[i].q[2] * c[i].q[1] + c[i].q[3] * c[i].q[0];
   }
-  
+
 /*
 
   c = a *b;
