@@ -19,7 +19,7 @@ typedef struct quaternion {
   double q3;
 } quaternion_t;
 
-#define N 10000000
+//#define N
 #define CLS 64
 
 void iniCuatR(quaternion_t *cuat);
@@ -79,9 +79,22 @@ double mhz(int verbose, int sleeptime) {
   return rate;
 }
 
+int N;
+
 int main(int argc, char const *argv[]) {
   double ck = 0;
   quaternion_t *a, *b, *c, *dp;
+
+  int q = 7;
+  
+  if (argc == 2) {
+    q = atoi(argv[1]);
+  }
+
+  N = pow(10,q); 
+
+  FILE *fichero;
+  fichero = fopen("v1.csv", "a+");
 
   a = _mm_malloc(sizeof(quaternion_t)*N, CLS);
   b = _mm_malloc(sizeof(quaternion_t)*N, CLS);
@@ -95,15 +108,16 @@ int main(int argc, char const *argv[]) {
   iniCuatR(b);
 
   /*
-  a[0].q[0] = 1;
-  a[0].q[1] = 2;
-  a[0].q[2] = 3;
-  a[0].q[3] = 4;
+  a[0].q0 = 1;
+  a[0].q1 = 2;
+  a[0].q2 = 3;
+  a[0].q3 = 4;
 
-  b[0].q[0] = 4;
-  b[0].q[1] = 3;
-  b[0].q[2] = 2;
-  b[0].q[3] = 1;*/
+  b[0].q0 = 4;
+  b[0].q1 = 3;
+  b[0].q2 = 2;
+  b[0].q3 = 1;
+  */
 
 
   // Imprimimos los vectores de cuaterniones
@@ -132,12 +146,11 @@ int main(int argc, char const *argv[]) {
   }
 
 
-/*
-  printf("Vector C\n");
+  /*printf("Vector C\n");
   for (int i = 0; i < N; ++i) {
     imprimirCuat(c[i]);
-  }
-*/
+  }*/
+
   for (int i = 0; i < N; ++i) {
     dp->q0 += c[i].q0 * c[i].q0 - c[i].q1 * c[i].q1 -
                c[i].q2 * c[i].q2 - c[i].q3 * c[i].q3;
@@ -164,9 +177,15 @@ int main(int argc, char const *argv[]) {
   printf("Cuaterninon\n");
   imprimirCuat(*dp);
 
+  printf("%d,%1.10lf,\n", q, ck);
+  fprintf(fichero, "%d,%1.10lf,\n", q, ck);
+
+  fclose(fichero);
+
   free(a);
   free(b);
   free(c);
+  free(dp);
 
   return 0;
 }
