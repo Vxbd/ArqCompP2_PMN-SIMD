@@ -22,7 +22,7 @@ void iniCuatR(quaternion_t *cuat);
 void iniCuat(quaternion_t *cuat);
 void prod(double *a, double *b, double *c);
 void sum(double *a, double *b, double *c);
-void opera(double *c, double *dp);
+void opera(double *c, double **dp);
 void imprimirCuat(quaternion_t cuat);
 void start_counter();
 double get_counter();
@@ -77,12 +77,12 @@ double mhz(int verbose, int sleeptime) {
 
 int main(int argc, char const *argv[]) {
   double ck = 0;
-  quaternion_t *a, *b, *c;
-  quaternion_t dp;
+  quaternion_t *a, *b, *c, *dp;
 
   a = _mm_malloc(sizeof(quaternion_t)*N, CLS);
   b = _mm_malloc(sizeof(quaternion_t)*N, CLS);
-  c = _mm_malloc(sizeof(quaternion_t)*N, CLS);  
+  c = _mm_malloc(sizeof(quaternion_t)*N, CLS);
+  dp = _mm_malloc(sizeof(quaternion_t), CLS);  
 
   int i; //Variable de bucles
   srand(69); // Establecemos semente
@@ -114,7 +114,7 @@ int main(int argc, char const *argv[]) {
     //imprimirCuat(b[i]);
   }
 
-  iniCuat(&dp);
+  iniCuat(dp);
 
   start_counter();
   /*---------Inicio codigo a medir---------*/
@@ -128,30 +128,30 @@ int main(int argc, char const *argv[]) {
     c[i].q[3] = a[i].q[0] * b[i].q[3] + a[i].q[1] * b[i].q[2] -
                 a[i].q[2] * b[i].q[1] + a[i].q[3] * b[i].q[0];
 
-    dp.q[0] += c[i].q[0] * c[i].q[0] - c[i].q[1] * c[i].q[1] -
+    dp->q[0] += c[i].q[0] * c[i].q[0] - c[i].q[1] * c[i].q[1] -
                c[i].q[2] * c[i].q[2] - c[i].q[3] * c[i].q[3];
-    dp.q[1] += c[i].q[0] * c[i].q[1] + c[i].q[1] * c[i].q[0] +
+    dp->q[1] += c[i].q[0] * c[i].q[1] + c[i].q[1] * c[i].q[0] +
                c[i].q[2] * c[i].q[3] - c[i].q[3] * c[i].q[2];
-    dp.q[2] += c[i].q[0] * c[i].q[2] - c[i].q[1] * c[i].q[3] +
+    dp->q[2] += c[i].q[0] * c[i].q[2] - c[i].q[1] * c[i].q[3] +
                c[i].q[2] * c[i].q[0] + c[i].q[3] * c[i].q[1];
-    dp.q[3] += c[i].q[0] * c[i].q[3] + c[i].q[1] * c[i].q[2] -
+    dp->q[3] += c[i].q[0] * c[i].q[3] + c[i].q[1] * c[i].q[2] -
                c[i].q[2] * c[i].q[1] + c[i].q[3] * c[i].q[0];
   }
 
 /*
 
   c = a *b;
-  dp= dp + c*c;
+  *dp= *dp + c*c;
 
-  dp = dp + (a*b)*(a*b);
+  *dp = *dp + (a*b)*(a*b);
 
 
-  dp+=(a*b)*(a*b);
+  *dp+=(a*b)*(a*b);
 
   c[0] = a[0] *b[0];
-  dp[0]=c*c;
+  *dp[0]=c*c;
   c=a*b;
-  dp=
+  *dp=
 
 */
   
@@ -167,7 +167,7 @@ int main(int argc, char const *argv[]) {
   mhz(1, 1);
 
   printf("Cuaterninon\n");
-  imprimirCuat(dp);
+  imprimirCuat(*dp);
 
   return 0;
 }
@@ -193,7 +193,7 @@ void imprimirCuat(quaternion_t cuat) {
 
 //Deshechado
 /*
-  iniCuat(&dp);
+  iniCuat(&*dp);
 
   printf("Vector C\n");
   for (int i = 0; i < N; ++i) {
