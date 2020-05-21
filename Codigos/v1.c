@@ -86,20 +86,20 @@ int main(int argc, char const *argv[]) {
   quaternion_t *a, *b, *c, *dp;
 
   int q = 7;
-
+  
   if (argc == 2) {
     q = atoi(argv[1]);
   }
 
-  N = pow(10,q);
+  N = pow(10,q); 
 
   FILE *fichero;
   fichero = fopen("v1.csv", "a+");
 
   a = _mm_malloc(sizeof(quaternion_t)*N, CLS);
   b = _mm_malloc(sizeof(quaternion_t)*N, CLS);
-  c = _mm_malloc(sizeof(quaternion_t)*N, CLS);
-  dp = _mm_malloc(sizeof(quaternion_t), CLS);
+  c = _mm_malloc(sizeof(quaternion_t)*N, CLS);  
+  dp = _mm_malloc(sizeof(quaternion_t), CLS);  
 
   srand(69); // Establecemos semente
 
@@ -177,15 +177,15 @@ int main(int argc, char const *argv[]) {
   printf("Cuaterninon\n");
   imprimirCuat(*dp);
 
-  printf("%d,%1.10lf,\n", q, ck);
-  fprintf(fichero, "%d,%1.10lf,\n", q, ck);
+  printf("%d,%1.10lf,\n", q, ck/N);
+  fprintf(fichero, "%d,%1.10lf,\n", q, ck/N);
 
   fclose(fichero);
 
-  _mm_free(a);
-  _mm_free(b);
-  _mm_free(c);
-  _mm_free(dp);
+  free(a);
+  free(b);
+  free(c);
+  free(dp);
 
   return 0;
 }

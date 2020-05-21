@@ -159,8 +159,8 @@ int main(int argc, char const *argv[]) {
   printf("Cuaterninon\n");
   imprimirCuat(*dp);
 
-  printf("%d,%1.10lf,\n", q, ck);
-  fprintf(fichero, "%d,%1.10lf,\n", q, ck);
+  printf("%d,%1.10lf,\n", q, ck/N);
+  fprintf(fichero, "%d,%1.10lf,\n", q, ck/N);
 
   fclose(fichero);
 
