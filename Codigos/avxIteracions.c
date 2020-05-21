@@ -12,7 +12,6 @@ Titulo:
 #include <string.h>
 #include <unistd.h>
 
-
 typedef struct quaternion {
   double q[4];
 } quaternion_t;
@@ -166,21 +165,24 @@ int main(int argc, char const *argv[]) {
     terceroB =
         _mm256_setr_pd(b[i].q[2], b[i + 1].q[2], b[i + 2].q[2], b[i + 3].q[2]);
     cuartoB =
-        _mm256_setr_pd(b[i].q[3], b[i + 1].q[3], a[i + 2].q[3], b[i + 3].q[3]);
+        _mm256_setr_pd(b[i].q[3], b[i + 1].q[3], b[i + 2].q[3], b[i + 3].q[3]);
 
     // Calculamos c
     primeroC = _mm256_sub_pd(_mm256_sub_pd(_mm256_mul_pd(primeroA, primeroB),
                                            _mm256_mul_pd(segundoA, segundoB)),
                              _mm256_sub_pd(_mm256_mul_pd(terceroA, terceroB),
                                            _mm256_mul_pd(cuartoA, cuartoB)));
+
     segundoC = _mm256_add_pd(_mm256_add_pd(_mm256_mul_pd(primeroA, segundoB),
                                            _mm256_mul_pd(segundoA, primeroA)),
                              _mm256_sub_pd(_mm256_mul_pd(terceroA, cuartoB),
                                            _mm256_mul_pd(cuartoA, terceroA)));
+
     terceroC = _mm256_add_pd(_mm256_sub_pd(_mm256_mul_pd(primeroA, terceroB),
                                            _mm256_mul_pd(segundoA, cuartoB)),
                              _mm256_add_pd(_mm256_mul_pd(terceroA, primeroB),
                                            _mm256_mul_pd(cuartoA, terceroB)));
+
     cuartoC = _mm256_sub_pd(_mm256_add_pd(_mm256_mul_pd(primeroA, cuartoB),
                                           _mm256_mul_pd(segundoA, terceroB)),
                             _mm256_add_pd(_mm256_mul_pd(terceroA, segundoB),
