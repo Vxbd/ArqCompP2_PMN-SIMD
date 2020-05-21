@@ -119,11 +119,11 @@ int main(int argc, char const *argv[]) {
   // Imprimimos los vectores de cuaterniones
   printf("Vector A\n");
   for (int i = 0; i < N; ++i) {
-    imprimirCuat(a[i]);
+    //imprimirCuat(a[i]);
   }
   printf("Vector B\n");
   for (int i = 0; i < N; ++i) {
-    imprimirCuat(b[i]);
+    //imprimirCuat(b[i]);
   }
 
   iniCuat(dp);
@@ -142,12 +142,10 @@ int main(int argc, char const *argv[]) {
 
     dp->q[0] += c[i].q[0] * c[i].q[0] - c[i].q[1] * c[i].q[1] -
                c[i].q[2] * c[i].q[2] - c[i].q[3] * c[i].q[3];
-    dp->q[1] += c[i].q[0] * c[i].q[1] + c[i].q[1] * c[i].q[0] +
-               c[i].q[2] * c[i].q[3] - c[i].q[3] * c[i].q[2];
-    dp->q[2] += c[i].q[0] * c[i].q[2] - c[i].q[1] * c[i].q[3] +
-               c[i].q[2] * c[i].q[0] + c[i].q[3] * c[i].q[1];
-    dp->q[3] += c[i].q[0] * c[i].q[3] + c[i].q[1] * c[i].q[2] -
-               c[i].q[2] * c[i].q[1] + c[i].q[3] * c[i].q[0];
+    dp->q[1] += c[i].q[0] * c[i].q[1]*2;
+    dp->q[2] += c[i].q[0] * c[i].q[2]*2;
+    dp->q[3] += c[i].q[0] * c[i].q[3]*2;
+
   }
 
   ck = get_counter();
