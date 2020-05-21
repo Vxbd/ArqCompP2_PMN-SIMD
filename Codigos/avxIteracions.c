@@ -166,7 +166,7 @@ int main(int argc, char const *argv[]) {
     terceroB =
         _mm256_setr_pd(b[i].q[2], b[i + 1].q[2], b[i + 2].q[2], b[i + 3].q[2]);
     cuartoB =
-        _mm256_setr_pd(b[i].q[3], b[i + 1].q[3], a[i + 2].q[3], b[i + 3].q[3]);
+        _mm256_setr_pd(b[i].q[3], b[i + 1].q[3], b[i + 2].q[3], b[i + 3].q[3]);
 
     // Calculamos c
     primeroC = _mm256_sub_pd(_mm256_sub_pd(_mm256_mul_pd(primeroA, primeroB),
