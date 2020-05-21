@@ -172,15 +172,15 @@ int main(int argc, char const *argv[]) {
   printf("Cuaterninon\n");
   imprimirCuat(*dp);
 
-  printf("%d,%1.10lf,\n", q, ck);
-  fprintf(fichero, "%d,%1.10lf,\n", q, ck);
+  printf("%d,%1.10lf,\n", q, ck / N);
+  fprintf(fichero, "%d,%1.10lf,\n", q, ck / N);
 
   fclose(fichero);
 
-  _mm_free(a);
-  _mm_free(b);
-  _mm_free(c);
-  _mm_free(dp);
+  free(a);
+  free(b);
+  free(c);
+  free(dp);
 
   return 0;
 }

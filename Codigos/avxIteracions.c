@@ -12,6 +12,7 @@ Titulo:
 #include <string.h>
 #include <unistd.h>
 
+
 typedef struct quaternion {
   double q[4];
 } quaternion_t;
