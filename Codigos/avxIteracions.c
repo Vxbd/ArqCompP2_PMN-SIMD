@@ -138,6 +138,10 @@ int main(int argc, char const *argv[]) {
   __m256d primeroC, segundoC, terceroC, cuartoC;
   __m256d primeroDP, segundoDP, terceroDP, cuartoDP;
   __m256d dos = _mm256_set1_pd(2);
+  double *dp0 = (double *)_mm_malloc(sizeof(quaternion_t), CLS);
+  double *dp1 = (double *)_mm_malloc(sizeof(quaternion_t), CLS);
+  double *dp2 = (double *)_mm_malloc(sizeof(quaternion_t), CLS);
+  double *dp3 = (double *)_mm_malloc(sizeof(quaternion_t), CLS);
 
   start_counter();
   /*---------Inicio codigo a medir---------*/
@@ -167,15 +171,12 @@ int main(int argc, char const *argv[]) {
     primeroC = _mm256_sub_pd(
         _mm256_fmsub_pd(primeroA, primeroB, _mm256_mul_pd(segundoA, segundoB)),
         _mm256_fmsub_pd(terceroA, terceroB, _mm256_mul_pd(cuartoA, cuartoB)));
-
     segundoC = _mm256_add_pd(
         _mm256_fmadd_pd(primeroA, segundoB, _mm256_mul_pd(segundoA, primeroA)),
         _mm256_fmsub_pd(terceroA, cuartoB, _mm256_mul_pd(cuartoA, terceroA)));
-
     terceroC = _mm256_add_pd(
         _mm256_fmsub_pd(primeroA, terceroB, _mm256_mul_pd(segundoA, cuartoB)),
         _mm256_fmadd_pd(terceroA, primeroB, _mm256_mul_pd(cuartoA, terceroB)));
-
     cuartoC = _mm256_sub_pd(
         _mm256_fmadd_pd(primeroA, cuartoB, _mm256_mul_pd(segundoA, terceroB)),
         _mm256_fmadd_pd(terceroA, segundoB, _mm256_mul_pd(cuartoA, primeroB)));
@@ -189,16 +190,16 @@ int main(int argc, char const *argv[]) {
     cuartoDP = _mm256_mul_pd(_mm256_mul_pd(primeroC, cuartoC), dos);
 
     // Calculamos la acumulacion
-    double *dp1 = (double *)&primeroDP;
-    double *dp2 = (double *)&segundoDP;
-    double *dp3 = (double *)&terceroDP;
-    double *dp4 = (double *)&cuartoDP;
+    dp0 = &primeroDP;
+    dp1 = &segundoDP;
+    dp2 = &terceroDP;
+    dp3 = &cuartoDP;
 
     for (int j = 0; j < 4; j++) {
-      dp->q[0] += ;
-      dp->q[1] += ;
-      dp->q[2] += ;
-      dp->q[3] += ;
+      dp->q[0] += dp0[0 + j];
+      dp->q[1] += dp1[0 + j];
+      dp->q[2] += dp2[0 + j];
+      dp->q[3] += dp3[0 + j];
     }
   }
 
