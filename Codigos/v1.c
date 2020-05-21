@@ -5,14 +5,14 @@ Titulo:
 */
 
 #include <math.h>
+#include <mm_malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <mm_malloc.h>
 
 typedef struct quaternion {
-  //double q[4];
+  // double q[4];
   double q0;
   double q1;
   double q2;
@@ -91,14 +91,14 @@ int main(int argc, char const *argv[]) {
     q = atoi(argv[1]);
   }
 
-  N = pow(10,q);
+  N = pow(10, q);
 
   FILE *fichero;
   fichero = fopen("v1.csv", "a+");
 
-  a = _mm_malloc(sizeof(quaternion_t)*N, CLS);
-  b = _mm_malloc(sizeof(quaternion_t)*N, CLS);
-  c = _mm_malloc(sizeof(quaternion_t)*N, CLS);
+  a = _mm_malloc(sizeof(quaternion_t) * N, CLS);
+  b = _mm_malloc(sizeof(quaternion_t) * N, CLS);
+  c = _mm_malloc(sizeof(quaternion_t) * N, CLS);
   dp = _mm_malloc(sizeof(quaternion_t), CLS);
 
   srand(69); // Establecemos semente
@@ -119,15 +119,14 @@ int main(int argc, char const *argv[]) {
   b[0].q3 = 1;
   */
 
-
   // Imprimimos los vectores de cuaterniones
   printf("Vector A\n");
   for (int i = 0; i < N; ++i) {
-    //imprimirCuat(a[i]);
+    // imprimirCuat(a[i]);
   }
   printf("Vector B\n");
   for (int i = 0; i < N; ++i) {
-    //imprimirCuat(b[i]);
+    // imprimirCuat(b[i]);
   }
 
   iniCuat(dp);
@@ -135,16 +134,15 @@ int main(int argc, char const *argv[]) {
   start_counter();
   /*---------Inicio codigo a medir---------*/
   for (int i = 0; i < N; ++i) {
-    c[i].q0 = a[i].q0 * b[i].q0 - a[i].q1 * b[i].q1 -
-                a[i].q2 * b[i].q2 - a[i].q3 * b[i].q3;
-    c[i].q1 = a[i].q0 * b[i].q1 + a[i].q1 * b[i].q0 +
-                a[i].q2 * b[i].q3 - a[i].q3 * b[i].q2;
-    c[i].q2 = a[i].q0 * b[i].q2 - a[i].q1 * b[i].q3 +
-                a[i].q2 * b[i].q0 + a[i].q3 * b[i].q1;
-    c[i].q3 = a[i].q0 * b[i].q3 + a[i].q1 * b[i].q2 -
-                a[i].q2 * b[i].q1 + a[i].q3 * b[i].q0;
+    c[i].q0 = a[i].q0 * b[i].q0 - a[i].q1 * b[i].q1 - a[i].q2 * b[i].q2 -
+              a[i].q3 * b[i].q3;
+    c[i].q1 = a[i].q0 * b[i].q1 + a[i].q1 * b[i].q0 + a[i].q2 * b[i].q3 -
+              a[i].q3 * b[i].q2;
+    c[i].q2 = a[i].q0 * b[i].q2 - a[i].q1 * b[i].q3 + a[i].q2 * b[i].q0 +
+              a[i].q3 * b[i].q1;
+    c[i].q3 = a[i].q0 * b[i].q3 + a[i].q1 * b[i].q2 - a[i].q2 * b[i].q1 +
+              a[i].q3 * b[i].q0;
   }
-
 
   /*printf("Vector C\n");
   for (int i = 0; i < N; ++i) {
@@ -152,18 +150,15 @@ int main(int argc, char const *argv[]) {
   }*/
 
   for (int i = 0; i < N; ++i) {
-    dp->q0 += c[i].q0 * c[i].q0 - c[i].q1 * c[i].q1 -
-               c[i].q2 * c[i].q2 - c[i].q3 * c[i].q3;
-    dp->q1 += c[i].q0 * c[i].q1 + c[i].q1 * c[i].q0 +
-               c[i].q2 * c[i].q3 - c[i].q3 * c[i].q2;
-    dp->q2 += c[i].q0 * c[i].q2 - c[i].q1 * c[i].q3 +
-               c[i].q2 * c[i].q0 + c[i].q3 * c[i].q1;
-    dp->q3 += c[i].q0 * c[i].q3 + c[i].q1 * c[i].q2 -
-               c[i].q2 * c[i].q1 + c[i].q3 * c[i].q0;
+    dp->q0 += c[i].q0 * c[i].q0 - c[i].q1 * c[i].q1 - c[i].q2 * c[i].q2 -
+              c[i].q3 * c[i].q3;
+    dp->q1 += c[i].q0 * c[i].q1 + c[i].q1 * c[i].q0 + c[i].q2 * c[i].q3 -
+              c[i].q3 * c[i].q2;
+    dp->q2 += c[i].q0 * c[i].q2 - c[i].q1 * c[i].q3 + c[i].q2 * c[i].q0 +
+              c[i].q3 * c[i].q1;
+    dp->q3 += c[i].q0 * c[i].q3 + c[i].q1 * c[i].q2 - c[i].q2 * c[i].q1 +
+              c[i].q3 * c[i].q0;
   }
-
-
-
 
   ck = get_counter();
   /*-----------Fin codigo a medir-----------*/
@@ -192,21 +187,21 @@ int main(int argc, char const *argv[]) {
 
 void iniCuatR(quaternion_t *cuat) {
   for (int j = 0; j < N; ++j) {
-      cuat[j].q0 = (rand() % 1000000) * 0.00001;
-      cuat[j].q1 = (rand() % 1000000) * 0.00001;
-      cuat[j].q2 = (rand() % 1000000) * 0.00001;
-      cuat[j].q3 = (rand() % 1000000) * 0.00001;
+    cuat[j].q0 = (rand() % 1000000) * 0.00001;
+    cuat[j].q1 = (rand() % 1000000) * 0.00001;
+    cuat[j].q2 = (rand() % 1000000) * 0.00001;
+    cuat[j].q3 = (rand() % 1000000) * 0.00001;
   }
 }
 
 void iniCuat(quaternion_t *cuat) {
-    cuat->q0 = 0;
-    cuat->q1 = 0;
-    cuat->q2 = 0;
-    cuat->q3 = 0;
+  cuat->q0 = 0;
+  cuat->q1 = 0;
+  cuat->q2 = 0;
+  cuat->q3 = 0;
 }
 
 void imprimirCuat(quaternion_t cuat) {
-  printf(" Cuat: (%.3lf, %.3lf, %.3lf, %.3lf)\n", cuat.q0, cuat.q1,
-         cuat.q2, cuat.q3);
+  printf(" Cuat: (%.3lf, %.3lf, %.3lf, %.3lf)\n", cuat.q0, cuat.q1, cuat.q2,
+         cuat.q3);
 }

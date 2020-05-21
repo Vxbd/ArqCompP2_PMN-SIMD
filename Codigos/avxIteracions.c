@@ -137,7 +137,7 @@ int main(int argc, char const *argv[]) {
   __m256d primeroB, segundoB, terceroB, cuartoB;
   __m256d primeroC, segundoC, terceroC, cuartoC;
   __m256d primeroDP, segundoDP, terceroDP, cuartoDP;
-  __m256d dos = _mm256_set1_pd(2);
+  __m256d dos = _mm256_set1_pd(2.0);
   double *dp0 = (double *)_mm_malloc(sizeof(quaternion_t), CLS);
   double *dp1 = (double *)_mm_malloc(sizeof(quaternion_t), CLS);
   double *dp2 = (double *)_mm_malloc(sizeof(quaternion_t), CLS);
@@ -168,32 +168,37 @@ int main(int argc, char const *argv[]) {
         _mm256_setr_pd(b[i].q[3], b[i + 1].q[3], a[i + 2].q[3], b[i + 3].q[3]);
 
     // Calculamos c
-    primeroC = _mm256_sub_pd(
-        _mm256_fmsub_pd(primeroA, primeroB, _mm256_mul_pd(segundoA, segundoB)),
-        _mm256_fmsub_pd(terceroA, terceroB, _mm256_mul_pd(cuartoA, cuartoB)));
-    segundoC = _mm256_add_pd(
-        _mm256_fmadd_pd(primeroA, segundoB, _mm256_mul_pd(segundoA, primeroA)),
-        _mm256_fmsub_pd(terceroA, cuartoB, _mm256_mul_pd(cuartoA, terceroA)));
-    terceroC = _mm256_add_pd(
-        _mm256_fmsub_pd(primeroA, terceroB, _mm256_mul_pd(segundoA, cuartoB)),
-        _mm256_fmadd_pd(terceroA, primeroB, _mm256_mul_pd(cuartoA, terceroB)));
-    cuartoC = _mm256_sub_pd(
-        _mm256_fmadd_pd(primeroA, cuartoB, _mm256_mul_pd(segundoA, terceroB)),
-        _mm256_fmadd_pd(terceroA, segundoB, _mm256_mul_pd(cuartoA, primeroB)));
+    primeroC = _mm256_sub_pd(_mm256_sub_pd(_mm256_mul_pd(primeroA, primeroB),
+                                           _mm256_mul_pd(segundoA, segundoB)),
+                             _mm256_sub_pd(_mm256_mul_pd(terceroA, terceroB),
+                                           _mm256_mul_pd(cuartoA, cuartoB)));
+    segundoC = _mm256_add_pd(_mm256_add_pd(_mm256_mul_pd(primeroA, segundoB),
+                                           _mm256_mul_pd(segundoA, primeroA)),
+                             _mm256_sub_pd(_mm256_mul_pd(terceroA, cuartoB),
+                                           _mm256_mul_pd(cuartoA, terceroA)));
+    terceroC = _mm256_add_pd(_mm256_sub_pd(_mm256_mul_pd(primeroA, terceroB),
+                                           _mm256_mul_pd(segundoA, cuartoB)),
+                             _mm256_add_pd(_mm256_mul_pd(terceroA, primeroB),
+                                           _mm256_mul_pd(cuartoA, terceroB)));
+    cuartoC = _mm256_sub_pd(_mm256_add_pd(_mm256_mul_pd(primeroA, cuartoB),
+                                          _mm256_mul_pd(segundoA, terceroB)),
+                            _mm256_add_pd(_mm256_mul_pd(terceroA, segundoB),
+                                          _mm256_mul_pd(cuartoA, primeroB)));
 
     // Calculamos dp
-    primeroDP = _mm256_sub_pd(
-        _mm256_fmsub_pd(primeroC, primeroC, _mm256_mul_pd(segundoC, segundoC)),
-        _mm256_fmsub_pd(terceroC, terceroC, _mm256_mul_pd(cuartoC, cuartoC)));
+    primeroDP = _mm256_sub_pd(_mm256_sub_pd(_mm256_mul_pd(primeroC, primeroC),
+                                            _mm256_mul_pd(segundoC, segundoC)),
+                              _mm256_sub_pd(_mm256_mul_pd(terceroC, terceroC),
+                                            _mm256_mul_pd(cuartoC, cuartoC)));
     segundoDP = _mm256_mul_pd(_mm256_mul_pd(primeroC, segundoC), dos);
     terceroDP = _mm256_mul_pd(_mm256_mul_pd(primeroC, terceroC), dos);
     cuartoDP = _mm256_mul_pd(_mm256_mul_pd(primeroC, cuartoC), dos);
 
     // Calculamos la acumulacion
-    dp0 = &primeroDP;
-    dp1 = &segundoDP;
-    dp2 = &terceroDP;
-    dp3 = &cuartoDP;
+    dp0 = (double *)&primeroDP;
+    dp1 = (double *)&segundoDP;
+    dp2 = (double *)&terceroDP;
+    dp3 = (double *)&cuartoDP;
 
     for (int j = 0; j < 4; j++) {
       dp->q[0] += dp0[0 + j];
